@@ -285,7 +285,7 @@ export const highlightWords = (msgstr: string, shared: Set<string>): string => {
     .split(/\s+/)
     .map((word) => {
       const cleaned = word.toLowerCase().replace(/[^\w]/g, "");
-      return shared.has(cleaned) ? chalk.green(word) : chalk.white(word);
+      return shared.has(cleaned) ? chalk.yellow(word) : chalk.white(word);
     })
     .join(" ");
 };

@@ -33,6 +33,7 @@ export const registerDuplicatesCommand = (program: Command) => {
       "Allow gaps inside consecutive matching (only with --words)"
     )
     .option("--only <lang>", "Only check a specific language")
+    .option("--strict", "Fail with non-zero exit code if duplicates found")
     .description("Detect duplicate msgstr entries inside each language file")
     .action(async (opts) => {
       const wordsRequired = opts.words ? parseInt(opts.words, 10) : null;
@@ -107,9 +108,7 @@ export const registerDuplicatesCommand = (program: Command) => {
               reference: entry.reference,
             };
             seen.push(newEntry);
-            duplicates.push({
-              items: [newEntry],
-            });
+            duplicates.push({ items: [newEntry] });
           }
         }
 
@@ -122,17 +121,15 @@ export const registerDuplicatesCommand = (program: Command) => {
         totalFound += filtered.length;
         console.log(chalk.bold(`\n🌍 Language: ${chalk.cyan(lang)}\n`));
         console.log(
-          `-----------------------------------------------------------\n\n`
+          `-----------------------------------------------------------\n`
         );
-        signale.success(`✅ Found ${filtered.length} duplicate groups\n\n`);
-
+        signale.warn(`❗ Found ${filtered.length} duplicate groups\n\n`);
         console.log(
           `--- Detailed Matches --------------------------------------\n`
         );
 
         filtered.forEach((group, idx) => {
           signale.info(`${idx + 1}. Duplicate (${group.items.length})`);
-
           const sharedWords = getSharedWords(group.items);
           group.items.forEach((item) => {
             const highlighted = highlightWords(item.raw, sharedWords);
@@ -141,20 +138,26 @@ export const registerDuplicatesCommand = (program: Command) => {
               : item.file;
             signale.info(`${highlighted}  ${chalk.gray(location)}`);
           });
-
           console.log();
         });
       }
 
       if (totalFound === 0) {
         signale.success("🎉 No duplicates found in any language");
+        process.exit(0);
       } else {
         console.log(
           `-----------------------------------------------------------\n`
         );
-        signale.success(
-          `✅ Duplicate scan completed — total: ${totalFound} group(s) found`
-        );
+        if (opts.strict) {
+          signale.error("❌ Failing due to duplicates found (strict mode)");
+          process.exit(1);
+        } else {
+          signale.success(
+            `✅ Duplicate scan completed — total: ${totalFound} group(s) found`
+          );
+          process.exit(0);
+        }
       }
     });
 };
