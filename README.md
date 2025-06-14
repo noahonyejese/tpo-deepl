@@ -113,11 +113,12 @@ By default, detects **strict identical `msgstr` duplicates** per language file.
 
 #### Advanced near-duplicate detection
 
-| Option                  | Description                                                       |
-| ----------------------- | ----------------------------------------------------------------- |
-| `--words <number>`      | Minimum consecutive words to match                                |
-| `--similarity <number>` | Allow small gaps inside consecutive matches (only with `--words`) |
-| `--only <lang>`         | Limit scan to specific language                                   |
+| Option                  | Description                                                        |
+| ----------------------- | ------------------------------------------------------------------ |
+| `--words <number>`      | Minimum consecutive words to match                                 |
+| `--similarity <number>` | Allow small gaps inside consecutive matches (only with `--words`)  |
+| `--only <lang>`         | Limit scan to specific language                                    |
+| `--strict`              | Fail with non-zero exit code if duplicates are found (CI friendly) |
 
 #### Examples
 

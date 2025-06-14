@@ -1,6 +1,6 @@
 {
   "name": "tpo-deepl",
-  "version": "1.1.1",
+  "version": "1.2.1",
   "description": "Translate missing entries in .po files using DeepL",
   "main": "index.js",
   "type": "module",

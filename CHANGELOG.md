@@ -4,6 +4,14 @@ All notable changes to this project will be documented in this file.
 
 ---
 
+## [1.2.1] - 2025-06-14
+
+### Updated
+
+- Made duplicates useful within CI implementations
+
+---
+
 ## [1.2.0] - 2025-06-14
 
 ### Added
