@@ -1,24 +1,23 @@
 msgid ""
 msgstr ""
-"Language: de\n"
-"Content-Type: text/plain\n"
+"Language: en\n"
 
 #: src/app/components/Header.tsx:10
 msgid "welcome.to.stream"
-msgstr "Willkommen zu unserem Live-Stream!"
+msgstr "Welcome to our live stream!"
 
 #: src/app/components/Header.tsx:11
 msgid "welcome.to.stream.duplicate1"
-msgstr "Willkommen in unserem Stream!"
+msgstr "Welcome to our stream!"
 
 #: src/app/components/Header.tsx:12
 msgid "welcome.to.stream.duplicate2"
-msgstr "Willkommen live beim Stream!"
+msgstr "Welcome live to stream!"
 
 #: src/app/components/Header.tsx:20
 msgid "user.greeting"
-msgstr "Hallo lieber Benutzer."
+msgstr "Hello dear user."
 
 #: src/app/components/Header.tsx:21
 msgid "user.greeting.duplicate"
-msgstr "Hallo Benutzer."
+msgstr "Hello user."
