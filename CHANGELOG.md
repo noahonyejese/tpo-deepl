@@ -2,11 +2,21 @@
 
 All notable changes to this project will be documented in this file.
 
+## [1.2.4] - 2025-06-16
+
+### Fixes
+
+- Correctly translates special characters
+
+---
+
 ## [1.2.3] - 2025-06-16
 
 ### Updated
 
 - Made operation location use relative file paths
+
+---
 
 ## [1.2.2] - 2025-06-16
 

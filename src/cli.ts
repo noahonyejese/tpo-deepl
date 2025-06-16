@@ -33,7 +33,7 @@ async function main() {
     .description(
       "Translate missing entries in .po files using DeepL & detect po duplicates"
     )
-    .version("1.2.3");
+    .version("1.2.4");
 
   registerTranslateCommand(program);
   registerDuplicatesCommand(program);
