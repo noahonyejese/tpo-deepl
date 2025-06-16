@@ -5,9 +5,9 @@ import { signale } from "../cli";
 import { getTpoConfig } from "../configs";
 import {
   getTranslationDiffs,
-  resolvePoFiles,
   translateMissingEntries,
-} from "../functions";
+} from "../translate/utilts";
+import { resolvePoFiles } from "../utils/resolvers";
 
 export const registerTranslateCommand = (program: Command) => {
   program

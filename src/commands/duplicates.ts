@@ -6,10 +6,9 @@ import {
   getSharedWords,
   highlightWords,
   normalizeWords,
-  parsePoFile,
-  resolvePoFiles,
   SeenEntry,
-} from "../functions";
+} from "../duplicates/helpers";
+import { parsePoFile, resolvePoFiles } from "../utils/resolvers";
 
 const { Signale } = signalePkg;
 
