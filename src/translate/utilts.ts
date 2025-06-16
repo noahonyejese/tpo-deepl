@@ -32,7 +32,7 @@ export const getTranslationDiffs = async (
     throw new Error(`Main language file not found for ${config.mainLanguage}`);
   }
 
-  const mainRaw = fs.readFileSync(mainFilePath);
+  const mainRaw = fs.readFileSync(mainFilePath, { encoding: "utf-8" });
   const mainPo = poCompiler.parse(mainRaw);
   const mainTranslations = mainPo.translations[""] ?? {};
 
@@ -41,7 +41,7 @@ export const getTranslationDiffs = async (
   for (const [lang, filePath] of Object.entries(files)) {
     if (lang === config.mainLanguage) continue;
 
-    const raw = fs.readFileSync(filePath);
+    const raw = fs.readFileSync(filePath, { encoding: "utf-8" });
     const po = poCompiler.parse(raw);
     const translations = po.translations[""] ?? {};
 
@@ -91,7 +91,7 @@ export const translateMissingEntries = async (
     if (diff.untranslated === 0) continue;
 
     const filePath = poFiles[diff.language];
-    const poRaw = fs.readFileSync(filePath);
+    const poRaw = fs.readFileSync(filePath, { encoding: "utf-8" });
     const po = poCompiler.parse(poRaw);
     const translations = po.translations[""] ?? {};
 
@@ -129,6 +129,6 @@ export const translateMissingEntries = async (
     );
 
     const formatted = poCompiler.compile(po, { foldLength: 100000 });
-    fs.writeFileSync(filePath, formatted);
+    fs.writeFileSync(filePath, formatted, { encoding: "utf-8" });
   }
 };
