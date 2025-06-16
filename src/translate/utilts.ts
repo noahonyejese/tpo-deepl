@@ -1,46 +1,11 @@
 import chalk from "chalk";
 import * as Deepl from "deepl-node";
-import fg from "fast-glob";
 import fs from "fs";
 import { po as poCompiler } from "gettext-parser";
-import path from "path";
-import { match } from "path-to-regexp";
 import signale from "signale";
-import { getTpoConfig } from "./configs";
+import { getTpoConfig } from "../configs";
+import { resolvePoFiles } from "../utils/resolvers";
 import { initTranslator, translateBatch } from "./deepl";
-
-export const resolvePoFiles = async (): Promise<Record<string, string>> => {
-  const { localesPath } = getTpoConfig();
-
-  if (!localesPath.includes("{locale}")) {
-    throw new Error('localesPath must include "{locale}"');
-  }
-
-  const extension = path.extname(localesPath);
-  const baseDir = path.resolve(localesPath.split("{locale}")[0]);
-  const globPattern = path.join(baseDir, "**", `*${extension}`);
-
-  const files = await fg(globPattern, { absolute: true });
-
-  const matcher = match(
-    path
-      .resolve(localesPath.replace("{locale}", ":locale"))
-      .replace(/\./g, "\\."),
-    { decode: decodeURIComponent }
-  );
-
-  const langMap: Record<string, string> = {};
-
-  for (const filePath of files) {
-    const result = matcher(filePath.replace(/\\/g, "/")); // Normalize path separators
-
-    if (result !== false && typeof result.params.locale === "string") {
-      langMap[result.params.locale] = filePath;
-    }
-  }
-
-  return langMap;
-};
 
 export interface MissingEntry {
   msgid: string;
@@ -110,12 +75,6 @@ export const getTranslationDiffs = async (
   return diffs;
 };
 
-type PoEntry = {
-  msgid: string;
-  msgstr?: string[];
-  comments?: { reference?: string };
-};
-
 export const translateMissingEntries = async (
   diffs: TranslationDiff[],
   apiKey: string,
@@ -132,7 +91,7 @@ export const translateMissingEntries = async (
     const po = poCompiler.parse(poRaw);
     const translations = po.translations[""] ?? {};
 
-    signale.log(""); // spacing before new language
+    signale.log("");
     signale.start(`🌍  Translating language: [${diff.language}]`);
 
     const entries = diff.missing.filter(({ original }) => original);
@@ -152,8 +111,18 @@ export const translateMissingEntries = async (
       };
       const preview =
         translated.length > 40 ? translated.slice(0, 40) + "..." : translated;
-      signale.info(chalk.gray(` • ${msgid} → ${preview}`));
+
+      let locationInfo = "";
+      const entry = translations[msgid];
+      const reference = entry?.comments?.reference;
+      if (reference) {
+        const line = reference.split(":")[1] ?? "?";
+        locationInfo = ` [${filePath}:${line}]`;
+      }
+
+      signale.info(chalk.gray(` • ${msgid} → ${preview}${locationInfo}`));
     });
+
     signale.success(
       `✅  Updated [${diff.language}] (${diff.untranslated} entries)\n`
     );

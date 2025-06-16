@@ -1,6 +1,6 @@
 {
   "name": "tpo-deepl",
-  "version": "1.1.0",
+  "version": "1.2.1",
   "description": "Translate missing entries in .po files using DeepL",
   "main": "index.js",
   "type": "module",
@@ -11,7 +11,8 @@
     "access": "public"
   },
   "scripts": {
-    "dev": "tsx src/cli.ts",
+    "translate": "tsx src/cli.ts translate",
+    "duplicates": "tsx src/cli.ts duplicates",
     "knip": "knip",
     "build": "tsup src/cli.ts --format esm --target node22 --dts --out-dir dist --shims"
   },

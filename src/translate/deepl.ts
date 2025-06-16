@@ -1,6 +1,6 @@
 import * as Deepl from "deepl-node";
 import signale from "signale";
-import { getTpoConfig } from "./configs";
+import { getTpoConfig } from "../configs";
 
 let translator: Deepl.Translator | null = null;
 
