@@ -7,7 +7,7 @@ import path from "path";
 import { match } from "path-to-regexp";
 import signale from "signale";
 import { getTpoConfig } from "./configs";
-import { initTranslator, translateString } from "./deepl";
+import { initTranslator, translateBatch } from "./deepl";
 
 export const resolvePoFiles = async (): Promise<Record<string, string>> => {
   const { localesPath } = getTpoConfig();
@@ -135,26 +135,25 @@ export const translateMissingEntries = async (
     signale.log(""); // spacing before new language
     signale.start(`🌍  Translating language: [${diff.language}]`);
 
-    for (const { msgid, original } of diff.missing) {
-      if (!original || msgid === "") continue;
+    const entries = diff.missing.filter(({ original }) => original);
+    const texts = entries.map((e) => e.original);
+    const translationsBatch = await translateBatch(
+      texts,
+      diff.language as Deepl.TargetLanguageCode,
+      opts
+    );
 
-      const translation = await translateString(
-        original,
-        diff.language as any,
-        opts
-      );
-      const cleanText = translation.replace(/\s*\n\s*/g, " ").trim();
-
+    translationsBatch.forEach((translated, i) => {
+      const { msgid } = entries[i];
       translations[msgid] = {
         ...(translations[msgid] || {}),
         msgid,
-        msgstr: [cleanText],
+        msgstr: [translated],
       };
-
       const preview =
-        cleanText.length > 40 ? cleanText.slice(0, 40) + "..." : cleanText;
+        translated.length > 40 ? translated.slice(0, 40) + "..." : translated;
       signale.info(chalk.gray(` • ${msgid} → ${preview}`));
-    }
+    });
     signale.success(
       `✅  Updated [${diff.language}] (${diff.untranslated} entries)\n`
     );
