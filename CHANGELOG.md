@@ -2,6 +2,18 @@
 
 All notable changes to this project will be documented in this file.
 
+## [1.2.3] - 2025-06-16
+
+### Updated
+
+- Made operation location use relative file paths
+
+## [1.2.2] - 2025-06-16
+
+### Fixes
+
+- Some minor bug fixes
+
 ---
 
 ## [1.2.1] - 2025-06-14
