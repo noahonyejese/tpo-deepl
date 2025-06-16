@@ -5,7 +5,8 @@ import { po as poCompiler } from "gettext-parser";
 import signale from "signale";
 import { getTpoConfig } from "../configs";
 import { resolvePoFiles } from "../utils/resolvers";
-import { initTranslator, translateString } from "./deepl";
+import { initTranslator, translateBatch } from "./deepl";
+
 export interface MissingEntry {
   msgid: string;
   original: string;
@@ -93,24 +94,23 @@ export const translateMissingEntries = async (
     signale.log("");
     signale.start(`🌍  Translating language: [${diff.language}]`);
 
-    for (const { msgid, original } of diff.missing) {
-      if (!original || msgid === "") continue;
+    const entries = diff.missing.filter(({ original }) => original);
+    const texts = entries.map((e) => e.original);
+    const translationsBatch = await translateBatch(
+      texts,
+      diff.language as Deepl.TargetLanguageCode,
+      opts
+    );
 
-      const translation = await translateString(
-        original,
-        diff.language as any,
-        opts
-      );
-      const cleanText = translation.replace(/\s*\n\s*/g, " ").trim();
-
+    translationsBatch.forEach((translated, i) => {
+      const { msgid } = entries[i];
       translations[msgid] = {
         ...(translations[msgid] || {}),
         msgid,
-        msgstr: [cleanText],
+        msgstr: [translated],
       };
-
       const preview =
-        cleanText.length > 40 ? cleanText.slice(0, 40) + "..." : cleanText;
+        translated.length > 40 ? translated.slice(0, 40) + "..." : translated;
 
       let locationInfo = "";
       const entry = translations[msgid];
@@ -121,7 +121,7 @@ export const translateMissingEntries = async (
       }
 
       signale.info(chalk.gray(` • ${msgid} → ${preview}${locationInfo}`));
-    }
+    });
 
     signale.success(
       `✅  Updated [${diff.language}] (${diff.untranslated} entries)\n`

@@ -13,6 +13,7 @@
   "scripts": {
     "translate": "tsx src/cli.ts translate",
     "duplicates": "tsx src/cli.ts duplicates",
+    "knip": "knip",
     "build": "tsup src/cli.ts --format esm --target node22 --dts --out-dir dist --shims"
   },
   "files": [
@@ -38,15 +39,13 @@
     "dotenv-flow": "^4.1.0",
     "fast-glob": "^3.3.3",
     "gettext-parser": "^8.0.0",
-    "ink": "^5.2.1",
+    "knip": "^5.60.2",
     "path-to-regexp": "^8.2.0",
-    "react": "^19.1.0",
     "signale": "^1.4.0"
   },
   "devDependencies": {
     "@types/gettext-parser": "^8.0.0",
     "@types/node": "^22.15.23",
-    "@types/react": "^19.1.6",
     "@types/signale": "^1.4.7",
     "tsup": "^8.5.0",
     "tsx": "^4.19.4",
