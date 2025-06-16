@@ -6,6 +6,7 @@ export type SeenEntry = {
   raw: string;
   file: string;
   reference?: string;
+  msgid: string;
 };
 
 export const normalizeWords = (str: string): string[] => {

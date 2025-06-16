@@ -8,7 +8,12 @@ import {
   normalizeWords,
   SeenEntry,
 } from "../duplicates/helpers";
-import { parsePoFile, resolvePoFiles } from "../utils/resolvers";
+import {
+  extractPoLineMap,
+  formatLocation,
+  parsePoFile,
+  resolvePoFiles,
+} from "../utils/resolvers";
 
 const { Signale } = signalePkg;
 
@@ -76,6 +81,8 @@ export const registerDuplicatesCommand = (program: Command) => {
 
       for (const [lang, filePath] of filteredFiles) {
         const entries = await parsePoFile(filePath);
+        const lineMap = await extractPoLineMap(filePath);
+
         const seen: SeenEntry[] = [];
         const duplicates: { items: SeenEntry[] }[] = [];
 
@@ -98,6 +105,7 @@ export const registerDuplicatesCommand = (program: Command) => {
               raw: entry.msgstr,
               file: filePath,
               reference: entry.reference,
+              msgid: entry.msgid,
             });
           } else {
             const newEntry: SeenEntry = {
@@ -105,6 +113,7 @@ export const registerDuplicatesCommand = (program: Command) => {
               raw: entry.msgstr,
               file: filePath,
               reference: entry.reference,
+              msgid: entry.msgid,
             };
             seen.push(newEntry);
             duplicates.push({ items: [newEntry] });
@@ -130,13 +139,14 @@ export const registerDuplicatesCommand = (program: Command) => {
         filtered.forEach((group, idx) => {
           signale.info(`${idx + 1}. Duplicate (${group.items.length})`);
           const sharedWords = getSharedWords(group.items);
+
           group.items.forEach((item) => {
             const highlighted = highlightWords(item.raw, sharedWords);
-            const location = item.reference
-              ? `${item.file}:${item.reference.split(":")[1] ?? "?"}`
-              : item.file;
+            const line = lineMap.get(item.msgid) ?? "?";
+            const location = formatLocation(item.file, line);
             signale.info(`${highlighted}  ${chalk.gray(location)}`);
           });
+
           console.log();
         });
       }

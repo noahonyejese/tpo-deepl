@@ -66,3 +66,46 @@ export const parsePoFile = async (filePath: string): Promise<PoEntry[]> => {
 
   return entries;
 };
+
+export const extractPoLineMap = async (
+  filePath: string
+): Promise<Map<string, number>> => {
+  const raw = await readFile(filePath, "utf-8");
+  const lines = raw.split(/\r?\n/);
+
+  const msgidLineMap = new Map<string, number>();
+
+  let collecting = false;
+  let currentMsgid = "";
+  let startLine = 0;
+
+  for (let i = 0; i < lines.length; i++) {
+    const line = lines[i].trim();
+
+    if (line.startsWith("msgid ")) {
+      collecting = true;
+      currentMsgid = "";
+      startLine = i + 1;
+
+      const initial = line.match(/^msgid\s+"(.*)"$/);
+      if (initial) currentMsgid += initial[1];
+    } else if (collecting && line.startsWith('"')) {
+      const continuation = line.match(/^"(.*)"$/);
+      if (continuation) currentMsgid += continuation[1];
+    } else if (collecting) {
+      msgidLineMap.set(currentMsgid, startLine);
+      collecting = false;
+    }
+  }
+
+  if (collecting) {
+    msgidLineMap.set(currentMsgid, startLine);
+  }
+
+  return msgidLineMap;
+};
+
+export const formatLocation = (filePath: string, line?: string | number) => {
+  const relativePath = path.relative(process.cwd(), filePath);
+  return line ? `${relativePath}:${line}` : relativePath;
+};

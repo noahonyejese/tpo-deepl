@@ -4,7 +4,11 @@ import fs from "fs";
 import { po as poCompiler } from "gettext-parser";
 import signale from "signale";
 import { getTpoConfig } from "../configs";
-import { resolvePoFiles } from "../utils/resolvers";
+import {
+  extractPoLineMap,
+  formatLocation,
+  resolvePoFiles,
+} from "../utils/resolvers";
 import { initTranslator, translateBatch } from "./deepl";
 
 export interface MissingEntry {
@@ -91,6 +95,8 @@ export const translateMissingEntries = async (
     const po = poCompiler.parse(poRaw);
     const translations = po.translations[""] ?? {};
 
+    const lineMap = await extractPoLineMap(filePath);
+
     signale.log("");
     signale.start(`🌍  Translating language: [${diff.language}]`);
 
@@ -112,13 +118,8 @@ export const translateMissingEntries = async (
       const preview =
         translated.length > 40 ? translated.slice(0, 40) + "..." : translated;
 
-      let locationInfo = "";
-      const entry = translations[msgid];
-      const reference = entry?.comments?.reference;
-      if (reference) {
-        const line = reference.split(":")[1] ?? "?";
-        locationInfo = ` [${filePath}:${line}]`;
-      }
+      const line = lineMap.get(msgid) ?? "?";
+      const locationInfo = ` [${formatLocation(filePath, line)}]`;
 
       signale.info(chalk.gray(` • ${msgid} → ${preview}${locationInfo}`));
     });
